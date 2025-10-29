@@ -11,7 +11,8 @@ const PORT = process.env.PORT || 3000;
 
 //routes
 const authRoutes = require("./src/routes/userRoutes");
-const productRoutes = require("./src/routes/productRoutes")
+const productRoutes = require("./src/routes/productRoutes");
+const { verifyToken } = require('./src/helper/token');
 
 //middleware to parse the json data
 app.use(express.urlencoded({extended: true}))
@@ -24,7 +25,7 @@ connectDB();
 app.use("/api/auth", authRoutes);
 
 //verify routes
-app.use("/api/product", productRoutes)
+app.use("/api",verifyToken ,productRoutes)
 
 
 //404 error

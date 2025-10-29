@@ -1,7 +1,7 @@
 const Product = require("../models/productSchema")
 
 //get the product list
-const getProduct=async(res,req,next)=>{
+const getProduct=async(req,res,next)=>{
     try {
         const product = await Product.find({});
         res.status(200).send({
@@ -15,7 +15,7 @@ const getProduct=async(res,req,next)=>{
 
 
 //to create the product
-const createProduct=(res,req,next)=>{
+const createProduct=(req,res,next)=>{
     try {
         
     } catch (error) {

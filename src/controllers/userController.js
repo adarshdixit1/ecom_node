@@ -7,7 +7,6 @@ const login = async (req, res, next) => {
     try {
         const { email, password } = req.body;
         const user = await User.findOne({ email });
-        console.log('user', user)
         if (!user) {
             res.status(401).send({ "name": "Unauthorized", "message": "Invalid Credentials" });
         } else {
