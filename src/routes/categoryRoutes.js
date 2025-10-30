@@ -6,21 +6,22 @@ const {
   getCategoryById,
   deleteCategory,
 } = require("../controllers/categoryController");
+const { verifyRole } = require("../helper/checkRole");
 const router = express.Router();
 
 //to get the category
 router.get("", getCategory);
 
 //to add the category
-router.post("/add", createCategory);
+router.post("/add",verifyRole, createCategory);
 
 //to get category by id
 router.get("/:id", getCategoryById);
 
 //to update the category
-router.put("/:id", updateCategory);
+router.put("/:id",verifyRole, updateCategory);
 
 //to delete the category
-router.delete("/:id",deleteCategory)
+router.delete("/:id",verifyRole,deleteCategory)
 
 module.exports = router;

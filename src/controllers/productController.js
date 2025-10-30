@@ -1,5 +1,4 @@
 const Product = require("../models/productSchema");
-const Category = require("../models/categorySchema");
 
 //get the product list
 const getProduct = async (req, res, next) => {
@@ -66,11 +65,9 @@ const getProductById = async (req, res, next) => {
       });
     }
 
-    const category = await Category.findById({ _id: product.category });
-
     res.status(200).send({
       name: "Success",
-      data: { ...product, category },
+      data: product,
     });
   } catch (error) {
     next(error);
