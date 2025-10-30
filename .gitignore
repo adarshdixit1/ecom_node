@@ -85,6 +85,7 @@ public
 .env.test
 .env.production
 .env.local
+.env.staging
 .env.*.local
 
 # Mac system files

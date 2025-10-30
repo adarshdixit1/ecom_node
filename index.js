@@ -9,10 +9,8 @@ dotenv.config({ path: envFile });
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-//routes
-const authRoutes = require("./src/routes/userRoutes");
-const productRoutes = require("./src/routes/productRoutes");
-const { verifyToken } = require('./src/helper/token');
+const apiRoutes = require("./src/routes/route")
+
 
 //middleware to parse the json data
 app.use(express.urlencoded({extended: true}))
@@ -21,11 +19,8 @@ app.use(express.json())
 //for connected DB
 connectDB();
 
-//app routes
-app.use("/api/auth", authRoutes);
-
-//verify routes
-app.use("/api",verifyToken ,productRoutes)
+// Routes for app
+app.use("/api", apiRoutes);
 
 
 //404 error
