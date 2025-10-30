@@ -11,7 +11,9 @@ const { verifyToken } = require("../helper/token");
 router.use("/auth", authRoutes);
 
 //verify routes
-// router.use('/category',verifyToken, categoryRoutes)
+
+// category routes
+router.use('/category',verifyToken, categoryRoutes)
 
 //product routes
 router.use("/product",verifyToken ,productRoutes)
