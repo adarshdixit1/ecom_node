@@ -1,6 +1,7 @@
 const ROLE={
     ADMIN:"admin",
-    CUSTOMER:"customer"
+    SUB_ADMIN:"subAdmin",
+    CUSTOMER:"customer",
 }
 
 module.exports = {
