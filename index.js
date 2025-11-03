@@ -5,12 +5,15 @@ const dotenv = require('dotenv');
 const envFile = process.env.NODE_ENV === 'staging' ? '.env.staging' : '.env';
 dotenv.config({ path: envFile });
 
+// imports for cluster
+const cluster = require('cluster');
+const http = require('http');
+const numCPUs = require('os').cpus().length;
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 const apiRoutes = require("./src/routes/route")
-
 
 //middleware to parse the json data
 app.use(express.urlencoded({extended: true}))
@@ -39,6 +42,25 @@ app.use((err,req, res, next) => {
     });
 })
 
-app.listen(PORT,()=>{
-    console.log(`Server is running at ${PORT}`)
-})
+// basic cluster
+if (cluster.isMaster) {
+    // Fork workers.
+    for (let i = 0; i < numCPUs; i++) {
+        cluster.fork();
+    }
+
+    cluster.on('exit', (worker, code, signal) => {
+        console.log(`Worker ${worker.process.pid} died`);
+        // Optionally restart a new worker
+        cluster.fork();
+    });
+} else {
+    // WORKER: Serve the Express app
+    app.listen(PORT, () => {
+        console.log(`Worker ${process.pid} started on port ${PORT}`);
+    });
+}
+
+// app.listen(PORT,()=>{
+//     console.log(`Server is running at ${PORT}`)
+// })
