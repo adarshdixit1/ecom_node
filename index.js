@@ -13,6 +13,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 const apiRoutes = require("./src/routes/route")
+const path  =require('path')
 
 //middleware to parse the json data
 app.use(express.urlencoded({extended: true}))
@@ -20,6 +21,8 @@ app.use(express.json())
 
 //for connected DB
 connectDB();
+
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // Routes for app
 app.use("/api", apiRoutes);

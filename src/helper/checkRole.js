@@ -1,5 +1,3 @@
-const { ROLE } = require("../constant/role.const");
-
 //To verify the role of user
 const verifyRole = (...roles) => {
   return (req, res, next) => {
@@ -15,7 +13,6 @@ const verifyRole = (...roles) => {
     }
   };
 };
-
 //end
 
 module.exports = {
