@@ -1,7 +1,7 @@
 const Product = require("../models/productSchema");
 const fs = require("fs");
-const path = require("path");
-const xlsx = require("xlsx");
+const path = require('path');
+const ExcelJS = require('exceljs');
 
 //get the product list
 const getProduct = async (req, res, next) => {
@@ -80,65 +80,59 @@ const getProductById = async (req, res, next) => {
   }
 };
 
+
 const getExcelOfProduct = async (req, res, next) => {
   try {
-    // Fetch all products and populate category field to get category names
-    const allProduct = await Product.find().populate("category");
+    const fileName = `products_${Date.now()}.xlsx`;
 
-    if (!allProduct || allProduct.length === 0) {
-      return res
-        .status(404)
-        .json({ name: "Not Found", message: "No data found" });
+    const filePath = path.join(__dirname,'../../uploads/excel', fileName);
+    fs.mkdirSync(path.dirname(filePath),{recursive:true});
+
+    //for stream
+    const stream = fs.createWriteStream(filePath);
+    const workbook = new ExcelJS.stream.xlsx.WorkbookWriter({ stream });
+    const worksheet = workbook.addWorksheet('Products')
+
+    worksheet.addRow([
+      'Name', 'Description', 'Price', 'Category', 'Stock', 'Ratings Count', 'Average Rating', 'Created At', 'Updated At'
+    ]).commit();
+
+    // take the data from db
+    const cursor = Product.find().populate('category').cursor();
+
+    for await (const product of cursor) {
+      const avgRating = product.ratings.length
+        ? (product.ratings.reduce((s, r) => s + r.rating, 0) / product.ratings.length).toFixed(2)
+        : 'N/A';
+
+      worksheet.addRow([
+        product.name,
+        product.description,
+        product.price,
+        product.category ? product.category.name : '',
+        product.stock,
+        product.ratings.length,
+        avgRating,
+        product.createdAt,
+        product.updatedAt
+      ]).commit();
     }
 
-    // Map products to flatten category name for Excel
-    const dataForExcel = allProduct.map((product) => ({
-      Name: product.name,
-      Description: product.description,
-      Price: product.price,
-      Category: product.category ? product.category.name : "",
-      Stock: product.stock,
-      RatingsCount: product.ratings.length,
-      AverageRating:
-        product.ratings.length > 0
-          ? (
-              product.ratings.reduce((sum, r) => sum + r.rating, 0) /
-              product.ratings.length
-            ).toFixed(2)
-          : "N/A",
-      CreatedAt: product.createdAt,
-      UpdatedAt: product.updatedAt,
-    }));
+    await workbook.commit();
 
-    // Create workbook
-    const worksheet = xlsx.utils.json_to_sheet(dataForExcel);
-    const workbook = xlsx.utils.book_new();
-    xlsx.utils.book_append_sheet(workbook, worksheet, "Products");
+    const fileUrl = `${req.protocol}://${req.get("host")}/uploads/excel/${fileName}`;
 
-    // Define file path
-    const fileName = `products_${Date.now()}.xlsx`;
-    const filePath = path.join(__dirname, "../../uploads/excel", fileName);
-
-    // Ensure directory exists
-    fs.mkdirSync(path.dirname(filePath), { recursive: true });
-
-    // Write file to disk
-    xlsx.writeFile(workbook, filePath);
-
-    // Generate public URL (assuming you’re serving static files)
-    const fileUrl = `${req.protocol}://${req.get(
-      "host"
-    )}/uploads/excel/${fileName}`;
-
-    return res.status(200).json({
+    res.json({
       success: true,
-      message: "Excel file generated successfully",
-      downloadUrl: fileUrl,
+      message: 'Excel file generated successfully',
+      downloadUrl: fileUrl
     });
+
   } catch (error) {
     next(error);
   }
 };
+
 
 // end
 
