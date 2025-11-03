@@ -7,7 +7,6 @@ dotenv.config({ path: envFile });
 
 // imports for cluster
 const cluster = require('cluster');
-const http = require('http');
 const numCPUs = require('os').cpus().length;
 
 const app = express();
