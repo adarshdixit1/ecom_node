@@ -5,8 +5,8 @@ const router = express.Router();
 const authRoutes = require("./userRoutes");
 const categoryRoutes = require('./categoryRoutes')
 const productRoutes = require("./productRoutes");
+const cartRoutes = require("./cartRoutes")
 const { verifyToken } = require("../helper/token");
-const { verifyRole } = require('../helper/checkRole');
 
 //app routes
 router.use("/auth", authRoutes);
@@ -18,6 +18,9 @@ router.use('/category',verifyToken,categoryRoutes)
 
 //product routes
 router.use("/product",verifyToken ,productRoutes)
+
+//cart routes
+router.use('/cart', verifyToken,cartRoutes)
 
 
 module.exports = router;
