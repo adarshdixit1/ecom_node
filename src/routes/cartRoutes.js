@@ -2,7 +2,7 @@ const express = require("express");
 const {
   getCartDetail,
   addToCart,
-  removeFromCart,
+  removeProduct,
 } = require("../controllers/cartController");
 const router = express.Router();
 
@@ -13,6 +13,6 @@ router.get("", getCartDetail);
 router.post("/add", addToCart);
 
 //to remove the product in cart
-router.delete("/remove", removeFromCart);
+router.delete("/:id", removeProduct);
 
 module.exports = router;

@@ -15,14 +15,14 @@ const getCartDetail=async(req,res,next)=>{
 }
 
 const addToCart=async(req,res,next)=>{
-    const user = req.user;
-    const {items} = req.body;
-
+    
     try {
+        const user = req.user;
+        const {items} = req.body;
         if(!user || !user.id){
             const error = new Error('User not found');
             error.status = 500;
-            next(error);
+            return next(error);
         }
         const cart = new Cart({
             userId:user.id,
@@ -38,16 +38,48 @@ const addToCart=async(req,res,next)=>{
     }
 }
 
-const removeFromCart=async(req,res,next)=>{
+const removeProduct = async (req, res, next) => {
     try {
-        
+        const user = req.user;
+        const productId = req.params.id;
+
+        if (!user || !user.id) {
+            const error = new Error('User not found');
+            error.status = 500;
+            return next(error);
+        }
+
+        if (!productId) {
+            const error = new Error('Product ID is required');
+            error.status = 400;
+            return next(error);
+        }
+
+        const updatedCart = await Cart.findOneAndUpdate(
+            { userId: user.id },
+            { $pull: { items: { productId: productId } } },
+            { new: true }
+        );
+
+        if (!updatedCart) {
+            const error = new Error('Cart not found');
+            error.status = 404;
+            return next(error);
+        }
+
+        res.status(200).send({
+            name: "Success",
+            message: "Product removed from cart",
+            cart: updatedCart
+        });
     } catch (error) {
-        next(error)
+        next(error);
     }
-}
+};
+
 
 module.exports={
     getCartDetail,
     addToCart,
-    removeFromCart
+    removeProduct
 }
