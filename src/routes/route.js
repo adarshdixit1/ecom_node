@@ -6,6 +6,7 @@ const authRoutes = require("./userRoutes");
 const categoryRoutes = require('./categoryRoutes')
 const productRoutes = require("./productRoutes");
 const cartRoutes = require("./cartRoutes")
+const orderRoutes = require('./orderRoutes')
 const { verifyToken } = require("../helper/token");
 
 //app routes
@@ -21,6 +22,9 @@ router.use("/product",verifyToken ,productRoutes)
 
 //cart routes
 router.use('/cart', verifyToken,cartRoutes)
+
+//order routes
+router.use('/order',verifyToken,orderRoutes)
 
 
 module.exports = router;
